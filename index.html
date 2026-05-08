@@ -549,7 +549,16 @@
             doc.addImage(imgData, 'JPEG', oX, margin + sH + margin + (sH - dH) / 2, dW, dH);
           }
           setProgress(90, t.statusGenerating);
-          doc.save(`smart-1to2-${isLandscape ? 'landscape' : 'portrait'}-${new Date().toISOString().slice(0,10)}.pdf`);
+          const filename = `smart-1to2-${isLandscape ? 'landscape' : 'portrait'}-${new Date().toISOString().slice(0,10)}.pdf`;
+          const pdfBlob = doc.output('blob');
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 1000);
           setProgress(100); setStatus(t.statusDone, 'success'); btn.disabled = false;
         };
         img.onerror = () => { throw new Error('fail'); };
